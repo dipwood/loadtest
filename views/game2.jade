@@ -1,0 +1,21 @@
+h1= title
+p Welcome to #{title}
+p Game
+
+<form action="/newgame" method="POST">
+input(type="search", placeholder="enter a number")
+<button type="submit">Submit</button>
+</form>
+
+script(src="/javascripts/newgame.js")
+script(src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js")
+
+<form action="/game" method="POST">
+input(type='text', id="query", value='4')
+
+input(type='button', value='Submit', onclick='checkAnswer()')
+</form>
+
+<form action="/game" method="POST">
+<button type="submit">Save Session</button>
+</form>
