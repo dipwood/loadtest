@@ -4,7 +4,11 @@
  */
 
 var express = require('express');
-var routes = require('./routes');
+
+var routes = require('./routes')
+var start = require('./routes/start.js');
+
+
 var cookieParser = require('cookie-parser')
 var session = require('express-session')
 var parseurl = require('parseurl')
@@ -35,9 +39,11 @@ MongoClient.connect(url, function(err, db) {
 app.set('trust proxy', 1) // trust first proxy
 app.use(session({
   secret: 'secret1',
-  resave: false,
+  resave: true,
   saveUninitialized: true,
-  //cookie: { secure: true }
+  rolling: true,
+  name: 'managersession',
+  cookie: { maxAge: 2629746000 }
 }));
 
 /*
@@ -98,7 +104,7 @@ app.configure(function(){
   app.use(express.cookieParser());
   app.use(express.session({
     secret: conf.secret,
-    maxAge: new Date(Date.now() + 3600000),
+    maxAge: new Date(Date.now() + 2629746000),
     store: new MongoStore(conf.db)
   }));
 
@@ -126,6 +132,8 @@ app.configure('production', function(){
 
 app.get('/', routes.index);
 
+app.get('/start', start.start);
+
 app.post('/', routes.index_post_handler);
 
 app.get('/loadgame', function (req, res) {
@@ -142,26 +150,57 @@ app.get('/game', function (req, res) {
 });
 */
 
-app.get('/game', function(req, res){
+app.get('/game', function(req, res)
+  {
   //console.log("Cookies: ", req.cookies);
   //console.log("Cookie Value: ", req.cookies);
-  if (req.cookies.remember) {
+  if (req.cookies.remember) 
+    {
     res.send('Remembered :). Click to <a href="/forget">forget</a>!.');
-  } else {
+    } 
+  else 
+    {
     res.send('<form method="post"><p>Check to <label>'
       + '<input type="checkbox" name="remember"/> remember me</label> '
       + '<input type="submit" value="Submit"/>.</p></form>');
-    var doc = {name:"David", title: req.cookies};
+    // var sessionCookie = req.sessionID;
+    // var sessionCookie2 = cookieParser.JSONCookies(sessionCookie);
+    // var sessionCookie3 = sessionCookie2;
+    // var sessionCookie2 = sessionCookie;
+    var doc = {name:"David", cookie: req.session, sessionID: req.sessionID};
     console.log(doc);
+
+  MongoClient.connect('mongodb://127.0.0.1:27017/login', function(err, db) 
+    {
+    if (err) throw err;
+    console.log("Connected to Database");
+
+    db.createCollection("users", function(err, collection)
+      {
+      if (err) throw err;
+
+      console.log("Created users");
+      console.log(collection);
+      });
+    });
+
+    /*
+    conf.findOne(doc, function(err, result)
+      { 
+      sessionStore.destroy(result.session, function()
+        {
+        conf.update({_id: result._id}, {$set:{"session" : sid}});
+        });
+      });
+    */
     /*
     conf.users.insert(document, {w: 1}, function(err, records)
       {
       console.log("Record added as "+records[0]._id);
       });
     */
-
-  }
-});
+    }
+  });
 
 app.get('/game2', function (req, res, next) {
   res.send('you viewed this page ' + req.session.views['/game2'] + ' times ' + req.cookies.get)
