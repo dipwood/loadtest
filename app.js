@@ -7,6 +7,8 @@ var express = require('express');
 
 var routes = require('./routes')
 var start = require('./routes/start.js');
+var load = require('./routes/load.js');
+var clearcookie = require('./routes/clearcookie.js')
 
 
 var cookieParser = require('cookie-parser')
@@ -42,7 +44,7 @@ app.use(session({
   resave: true,
   saveUninitialized: true,
   rolling: true,
-  name: 'managersession',
+  name: 'managersession2',
   cookie: { maxAge: 2629746000 }
 }));
 
@@ -132,9 +134,15 @@ app.configure('production', function(){
 
 app.get('/', routes.index);
 
+app.post('/', routes.index_post_handler);
+
 app.get('/start', start.start);
 
-app.post('/', routes.index_post_handler);
+app.get('/load', load.load);
+
+app.get('/clearcookie', clearcookie.clearcookie);
+
+app.post('/load', load.load_post_handler);
 
 app.get('/loadgame', function (req, res) {
   res.render('loadgame', { title: 'Load Game' });

@@ -5,7 +5,7 @@ var ObjectId = require('mongodb').ObjectID;
 exports.start = function(req, res)
 	{
   	res.render('start', { title: 'Login Page' })
-  	// console.log("Cookies: ", req.cookies.managersession)
+  	console.log("We're in the start route. Cookie: ", req.cookies.managersession)
   	// console.log("Cookie Session: ", req.session)
  	// console.log("Session ID: ", req.sessionID)
  	cookieID = req.cookies.managersession;
@@ -33,55 +33,15 @@ exports.start = function(req, res)
     		assert.equal(err, null);
      		if (doc != null) 
      			{
+     			console.log("Found document.");	
         		console.dir(doc);
-        		console.log("Found document.");	
       			} 
       		else 
       			{
-      			console.log("Didn't find document.");	
+      			console.log("Didn't find document.");
+      			db.close();	
     		  	// callback();
       			}
-   			});	
-    	/*
-    	insertUser(db, function() 
-  			{
-   			db.close();
-  			}, cookieID, cookieDetails);
-    	findUser(db, function() 
-    		{
-      		db.close();
-  			});
-  		*/
-		});
-
- 	var insertUser = function(db, callback, cookieID, cookieDetails) 
-		{
-  		db.collection('users').insertOne( { "test" : "test1", "testA" : "test2" } ),
-  		function(err, result) 
-  			{
-    		assert.equal(err, null);
-    		console.log("Inserted a document into the restaurants collection.");
-    		callback(result);
-    		}
-		}	
-
-	// testing purposes
-	var findUser = function(db, callback) 
-		{
-   		var cursor = db.collection('users').find( );
-   		cursor.each(function(err, doc) 
-   			{
-    		assert.equal(err, null);
-     		if (doc != null) 
-     			{
-        		console.dir(doc);
-        		console.log("Found document.");	
-      			} 
-      		else 
-      			{
-      			console.log("Didn't find document.");	
-    		  	callback();
-      			}
    			});
-		};
+		});
 	}
