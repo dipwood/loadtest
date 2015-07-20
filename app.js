@@ -14,12 +14,12 @@ var clearcookie = require('./routes/clearcookie.js')
 var cookieParser = require('cookie-parser')
 var session = require('express-session')
 var parseurl = require('parseurl')
-var MongoStore = require('connect-mongodb');
+var MongoStore = require('connect-mongo')(express);
 var mongo = require('mongoose');
 
 var app = module.exports = express.createServer();
 
-app.use(express.cookieParser('secret'));
+// app.use(express.cookieParser('secret'));
 
 
 var MongoClient = require('mongodb').MongoClient;
@@ -37,17 +37,19 @@ MongoClient.connect(url, function(err, db) {
 });
 */
 
-/* express/session tests */
+
+/* express/session tests 
 app.set('trust proxy', 1) // trust first proxy
 app.use(session({
   secret: 'secret1',
   resave: true,
   saveUninitialized: true,
   rolling: true,
-  name: 'managersession2',
+  name: 'managersession',
+  unset: 'destroy',
   cookie: { maxAge: 2629746000 }
 }));
-
+*/
 /*
 app.use(session({
   genid: function(req) 
@@ -60,7 +62,7 @@ app.use(session({
 }))
 */
 
-/* express/session tests */
+/* express/session tests 
 app.use(function (req, res, next) {
   var views = req.session.views
 
@@ -76,7 +78,7 @@ app.use(function (req, res, next) {
 
   next()
 })
-
+*/
 /*
 var singleServer = {
   "db" : "sessions",
@@ -86,6 +88,7 @@ var singleServer = {
 }
 */
 
+/*
 var conf = {
   db: {
     db: 'myDb',
@@ -97,6 +100,7 @@ var conf = {
   },
   secret: '076ee61d63aa10a125ea872411e433b9'
 };
+*/
 
 app.configure(function(){
   app.set('views', __dirname + '/views');
@@ -104,11 +108,50 @@ app.configure(function(){
   app.use(express.bodyParser());
   app.use(express.methodOverride());
   app.use(express.cookieParser());
+  app.set('trust proxy', 1) // trust first proxy
+  app.use(session
+    ({
+    secret: 'secret1',
+    resave: true,
+    saveUninitialized: true,
+    rolling: true,
+    store: new MongoStore({
+        url: 'mongodb://127.0.0.1:27017/login',
+        autoRemove: 'disabled',
+        collection: 'users',
+        w:1,
+    }),
+    name: 'managersession',
+    // unset: 'destroy',
+    cookie: { maxAge: 2629746000 }
+    }));
+  app.use(function (req, res, next) {
+  var views = req.session.views
+
+  if (!views) {
+    views = req.session.views = {}
+  }
+
+  // get the url pathname
+  var pathname = parseurl(req).pathname
+
+  // count the views
+  views[pathname] = (views[pathname] || 0) + 1
+
+  next()
+  })
+
+
+
+
+
+  /*
   app.use(express.session({
     secret: conf.secret,
     maxAge: new Date(Date.now() + 2629746000),
     store: new MongoStore(conf.db)
-  }));
+  });
+*/
 
 
   /*
@@ -183,7 +226,8 @@ app.get('/game', function(req, res)
     if (err) throw err;
     console.log("Connected to Database");
 
-    db.createCollection("users", function(err, collection)
+    db.setWriteConcern(1);
+    db.createCollection("users", {strict:true}, function(err, collection)
       {
       if (err) throw err;
 
@@ -191,6 +235,7 @@ app.get('/game', function(req, res)
       console.log(collection);
       });
     });
+
 
     /*
     conf.findOne(doc, function(err, result)
@@ -237,6 +282,7 @@ app.get('/testpage', function (req, res) {
   res.render('testpage', { title: 'Test Page' });
 });
 
+/*
 var dbUrl = 'mongodb://';
 //dbUrl += conf.db.username + ':' + conf.db.password + '@';
 dbUrl += conf.db.host + ':' + conf.db.port;
@@ -245,9 +291,10 @@ mongo.connect(dbUrl);
 mongo.connection.on('open', function () {
   app.listen(3000);
 });
+*/
 
-/*
+
 app.listen(3000, function(){
   console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
 });
-*/
+
