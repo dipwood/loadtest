@@ -1,6 +1,6 @@
 var Cookies = require( "cookies" )
-
-exports.index = function(req, res){
+exports.index = function(req, res)
+	{
   // console.log("We're in the index route. Cookie: ", req.cookies.managersession);
   // res.clearCookie('managersession');
   // res.cookies = null;
@@ -14,14 +14,23 @@ exports.index = function(req, res){
 
   // res.clearCookie('user');
   // req.cookies = new Cookies(req, res);
-  res.render('index', { title: 'Index' })
+  	res.render('index', { title: 'Index' })
+	if (req.cookies.managersession) 
+		{
+    	console.log("We remember.");
+    	} 
+    else
+    	{
+    	console.log("WE DON'T REMEMBER, DAWG");
+    	}
   // console.log("We're in the index route. Cookie: ", req.cookies.managersession);
   // req.cookies = new Cookies(req, res);
   // res.clearCookie('managersession');
-  console.log("We're in the index route again. Cookie: ", req.cookies);
+	console.log("We're in the index route. Cookie:. ", req.cookies);
   // console.log("Cookies: ", req.cookies)
-  console.log("Session: ", req.session)
-};
+  sessionID = req.session.id;
+	console.log("Session ID: ", sessionID)
+	};
 
 // handler for form submitted from homepage
 exports.index_post_handler = function(req, res)

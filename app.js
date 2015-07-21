@@ -6,9 +6,10 @@
 var express = require('express');
 
 var routes = require('./routes')
-var start = require('./routes/start.js');
-var load = require('./routes/load.js');
+var start = require('./routes/start.js')
+var load = require('./routes/load.js')
 var clearcookie = require('./routes/clearcookie.js')
+var newgame = require('./routes/newgame.js')
 
 
 var cookieParser = require('cookie-parser')
@@ -185,6 +186,10 @@ app.get('/load', load.load);
 
 app.get('/clearcookie', clearcookie.clearcookie);
 
+app.get('/newgame', newgame.newgame);
+
+app.post('/newgame', newgame.newgame_post_handler);
+
 app.post('/load', load.load_post_handler);
 
 app.get('/loadgame', function (req, res) {
@@ -221,12 +226,11 @@ app.get('/game', function(req, res)
     var doc = {name:"David", cookie: req.session, sessionID: req.sessionID};
     console.log(doc);
 
-  MongoClient.connect('mongodb://127.0.0.1:27017/login', function(err, db) 
+  MongoClient.connect('mongodb://127.0.0.1:27017/users', function(err, db) 
     {
     if (err) throw err;
     console.log("Connected to Database");
 
-    db.setWriteConcern(1);
     db.createCollection("users", {strict:true}, function(err, collection)
       {
       if (err) throw err;
