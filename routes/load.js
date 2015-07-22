@@ -16,11 +16,12 @@ function checkCookie(req, res)
 	// if cookie data exists
 	if (req.session && req.cookies.managersession)
 		{
-		MongoClient.connect('mongodb://127.0.0.1:27017/login', function(err, db) 
+		MongoClient.connect('mongodb://127.0.0.1:27017/users', function(err, db) 
     		{
     		if (err) throw err;
     		console.log("Connected to Database");
-			db.collection('users').findOne({ cookieID: req.cookies.managersession }, function (err, name) 
+    		cookieDetails = req.cookies.managersession;
+			db.collection('users').find({ "cookieDetails" : cookieDetails }, {$exists: true}).toArray(function (err, name) 
 				{
       			if (!name) 
       				{
@@ -29,13 +30,15 @@ function checkCookie(req, res)
       			else
       				{
       				console.log("WELCOME BACK, ");
-      				console.log(name.name);
+      				console.dir(name);
       				// console.log(req.session);
+      				/*
       				if (name.cookieID != req.cookies.managersession)
       					{
       					req.session = name;
       					}
       				console.log(req.session);
+      				*/
       				db.close();
       				}
       			})
