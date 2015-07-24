@@ -10,6 +10,7 @@ var start = require('./routes/start.js')
 var load = require('./routes/load.js')
 var clearcookie = require('./routes/clearcookie.js')
 var newgame = require('./routes/newgame.js')
+var game = require('./routes/game.js');
 
 
 var cookieParser = require('cookie-parser')
@@ -161,7 +162,10 @@ app.configure(function(){
         store: new mongoStore({'db': 'sessions'})
     }));
   */
-
+  app.use(function(req,res,next){
+    res.locals.session = req.session;
+    next();
+  });
   app.use(app.router);
   app.use(express.static(__dirname + '/public'));
 });
@@ -189,6 +193,8 @@ app.get('/clearcookie', clearcookie.clearcookie);
 app.get('/newgame', newgame.newgame);
 
 app.post('/newgame', newgame.newgame_post_handler);
+
+app.get('/game', game.game);
 
 app.post('/load', load.load_post_handler);
 
@@ -263,12 +269,14 @@ app.get('/game2', function (req, res, next) {
   res.send('you viewed this page ' + req.session.views['/game2'] + ' times ' + req.cookies.get)
 })
 
+/*
 app.post('/game', function(req, res){
   console.log("Cookies: ", req.cookies);
   var minute = 60 * 1000;
   if (req.body.remember) res.cookie('remember', 1, { maxAge: minute });
   res.redirect('back');
 });
+*/
 
 app.post('/game2', function(req, res){
   console.log("Cookies: ", req.cookies);
