@@ -1,6 +1,5 @@
-h1= title
-p Welcome to #{title}
-p Creation Page
+h1 Welcome to SC2 Manager
+p Please enter a name.
 
 script(src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js")
 
@@ -8,3 +7,5 @@ p
  form(method='post', action='/newgame')
   input(type='text',name='user')
   input(type='submit', name='submit')
+
+p (WARNING: This will delete any current saved games!)

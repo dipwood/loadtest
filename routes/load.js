@@ -8,7 +8,6 @@ exports.load = function(req, res)
 	console.log("We're in the load route. Cookie: ", req.cookies.managersession);
 	sessionID = req.session.id;
 	console.log("Session ID: ", sessionID)
-	// res.render('load', { title: 'Load State'});
 	};
 
 function checkCookie(req, res)
@@ -56,5 +55,5 @@ function checkCookie(req, res)
 
 exports.load_post_handler = function(req, res)
 	{
-	res.render('testpage', { title: 'Test Page' });
+	res.render('/', { title: 'Index' });
 	}

@@ -5,5 +5,20 @@
   , "dependencies": {
       "express": "~2.5.8"
     , "jade": ">= 0.0.1"
+    , "body-parser": "~1.13.2"
+    , "connect": "~3.4.0"
+    , "cookie-parser": "~1.3.5"
+    , "body-parser": "~1.13.2"
+	, "cookie-parser": "~1.3.5"
+	, "mongoose": "~4.0.7"
+	, "connect-mongo": "~0.8.2"
+	, "connect-mongodb": "~1.1.5"
+	, "connect-mongostore": "~0.1.4"
+	, "cookies": "~0.5.0"
+	, "express-session": "~1.11.3"
+	, "mocha-mongo": "~0.2.0"
+	, "mongodb": "~2.0.37"
+	, "parseurl": "~1.3.0"
+	, "passport": "~0.2.2"
   }
 }
