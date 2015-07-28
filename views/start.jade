@@ -1,0 +1,12 @@
+extends layout
+
+block content
+  h1 Welcome to SC2 Manager
+  p Please enter a name.
+
+  p
+    form(method='post', action='/newgame')
+      input(type='text',name='user')
+      input(type='submit', name='submit')
+
+  p (WARNING: This will delete any current saved games!)

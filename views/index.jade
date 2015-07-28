@@ -1,0 +1,13 @@
+extends layout
+
+block content
+  h1= title
+  p Main Menu
+
+  p
+    form(method='get', action='/start')
+      input(type='submit', value='New Game')
+
+  p
+    form(method='get', action='/load')
+      input(type='submit', value='Load Game')

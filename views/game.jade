@@ -1,0 +1,10 @@
+extends layout
+
+block content
+  h1= title
+  p Welcome to The #{title}
+  p Welcome back, #{username}!
+
+  p
+    form(method='get', action='/')
+      input(type='submit', value='Back to Main Menu')

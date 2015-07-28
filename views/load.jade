@@ -1,0 +1,25 @@
+h1= title
+p Welcome to #{title}
+p Load State
+
+script(src="/javascripts/newgame.js")
+script(src="/javascripts/clear.js")
+
+script(src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js")
+
+<form action="/" method="GET">
+input(type='text', id="query", value='4')
+
+input(type='button', value='Submit', onclick='checkAnswer()')
+</form>
+
+<form action="/start" method="GET">
+<button type="submit">New Game</button>
+</form>
+
+<br>
+
+<form action="/clearcookie" method="GET">
+<button type="submit">Clear Cookies</button>
+</form>
+
