@@ -2,6 +2,7 @@ var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
 var ObjectId = require('mongodb').ObjectID;
 
+// load user information if their session cookie exists in db
 exports.load = function(req, res)
 	{
 	checkCookie(req, res);
@@ -19,8 +20,9 @@ function checkCookie(req, res)
     		{
     		if (err) throw err;
     		console.log("Connected to Database");
-
-    		assert.equal(err, null);
+        assert.equal(err, null);
+        
+        // find the user
     		var userFinder = db.collection('users').find({ "cookieDetails" : sessionID });
     		userFinder.nextObject(function(err, doc) 
       			{
@@ -29,23 +31,21 @@ function checkCookie(req, res)
        				{
        				req.session.username = doc.name; 
         			console.log("WELCOME BACK, ", req.session.username);
-        			// req.session.username = doc.name; 
         			db.close();
         			res.redirect('/game');
         			} 
       			else
         			{
+              // goes back to index if user isn't found
         			console.log("No user detected! Click to go back to index.");
         			db.close();
         			res.send('No save found! Click to <a href="/">return to the index</a>.');
-        			// possible redirect option too
-        			// res.redirect('/')
         			}
         		})
     		}
     	)}
 
-	// else if no cookie data
+	// else if no cookie data, redirect to index
 	else
 		{
 		console.log("No cookie data");	
@@ -53,6 +53,7 @@ function checkCookie(req, res)
 		}	
 	};
 
+// shouldn't be called, redirect to index just in case
 exports.load_post_handler = function(req, res)
 	{
 	res.render('/', { title: 'Index' });
