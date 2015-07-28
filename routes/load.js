@@ -21,8 +21,8 @@ function checkCookie(req, res)
     		if (err) throw err;
     		console.log("Connected to Database");
         assert.equal(err, null);
-        
-        // find the user
+
+        // find the user based on session id
     		var userFinder = db.collection('users').find({ "cookieDetails" : sessionID });
     		userFinder.nextObject(function(err, doc) 
       			{
