@@ -5,19 +5,18 @@
 
 var express = require('express');
 
+// define routes
 var routes = require('./routes')
 var start = require('./routes/start.js')
 var load = require('./routes/load.js')
-var clearcookie = require('./routes/clearcookie.js')
 var newgame = require('./routes/newgame.js')
 var game = require('./routes/game.js');
 
-
+// declare variables for relevant dependencies
 var cookieParser = require('cookie-parser')
 var session = require('express-session')
 var parseurl = require('parseurl')
 var MongoStore = require('connect-mongo')(express);
-var mongo = require('mongoose');
 
 var app = module.exports = express.createServer();
 
@@ -34,6 +33,8 @@ app.configure(function(){
   app.use(express.methodOverride());
   app.use(express.cookieParser());
   app.set('trust proxy', 1) // trust first proxy
+
+  // session cookies are stored in mongo through MongoStore
   app.use(session
     ({
     secret: 'secret1',
@@ -50,21 +51,8 @@ app.configure(function(){
     // unset: 'destroy',
     cookie: { maxAge: 2629746000 }
     }));
-  app.use(function (req, res, next) {
-  var views = req.session.views
 
-  if (!views) {
-    views = req.session.views = {}
-  }
-
-  // get the url pathname
-  var pathname = parseurl(req).pathname
-
-  // count the views
-  views[pathname] = (views[pathname] || 0) + 1
-
-  next()
-  })
+  // allow use of session variables locally in views
   app.use(function(req,res,next){
     res.locals.session = req.session;
     next();
@@ -81,86 +69,28 @@ app.configure('production', function(){
   app.use(express.errorHandler());
 });
 
-// Routes
+// route templates. more detail in the relevant .js files
 
+// routes for index
 app.get('/', routes.index);
-
 app.post('/', routes.index_post_handler);
 
+// route for user creation
 app.get('/start', start.start);
 
+// routes for user loading, called from index and newgame routes
 app.get('/load', load.load);
-
-app.get('/clearcookie', clearcookie.clearcookie);
-
-app.get('/newgame', newgame.newgame);
-
-app.post('/newgame', newgame.newgame_post_handler);
-
-app.get('/game', game.game);
-
-app.post('/game', game.game_post_handler);
-
 app.post('/load', load.load_post_handler);
 
-app.get('/loadgame', function (req, res) {
-  res.render('loadgame', { title: 'Load Game' });
-});
+// routes for new game creation, called from start route
+app.get('/newgame', newgame.newgame);
+app.post('/newgame', newgame.newgame_post_handler);
 
-app.get('/newgame', function (req, res) {
-  res.render('newgame', { title: 'New Game' });
-});
+// routes for the actual game. called from load route
+app.get('/game', game.game);
+app.post('/game', game.game_post_handler);
 
-app.get('/game', function(req, res)
-  {
-  if (req.cookies.remember) 
-    {
-    res.send('Remembered :). Click to <a href="/forget">forget</a>!.');
-    } 
-  else 
-    {
-    res.send('<form method="post"><p>Check to <label>'
-      + '<input type="checkbox" name="remember"/> remember me</label> '
-      + '<input type="submit" value="Submit"/>.</p></form>');
-    var doc = {name:"David", cookie: req.session, sessionID: req.sessionID};
-    console.log(doc);
-
-  MongoClient.connect('mongodb://127.0.0.1:27017/users', function(err, db) 
-    {
-    if (err) throw err;
-    console.log("Connected to Database");
-
-    db.createCollection("users", {strict:true}, function(err, collection)
-      {
-      if (err) throw err;
-
-      console.log("Created users");
-      console.log(collection);
-      });
-    });
-    }
-  });
-
-app.get('/game2', function (req, res, next) {
-  res.send('you viewed this page ' + req.session.views['/game2'] + ' times ' + req.cookies.get)
-})
-
-app.post('/game2', function(req, res){
-  console.log("Cookies: ", req.cookies);
-  var minute = 60 * 1000;
-  if (req.body.remember) res.cookie('remember', 1, { maxAge: minute });
-  res.redirect('back');
-});
-
-app.get('/forget', function(req, res){
-  res.clearCookie('remember');
-  res.redirect('back');
-});
-
-app.get('/testpage', function (req, res) {
-  res.render('testpage', { title: 'Test Page' });
-});
-
+// port 3000 used for this app. localhost:3000 is index
 app.listen(3000, function(){
   console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
 });

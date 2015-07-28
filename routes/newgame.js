@@ -8,6 +8,7 @@ exports.newgame = function(req, res)
   res.redirect('/');
   }
 
+// this route is generated after completing the form in the start route
 exports.newgame_post_handler = function(req, res)
   {
   console.log(req.body.user);
@@ -19,9 +20,9 @@ exports.newgame_post_handler = function(req, res)
     {
     if (err) throw err;
     console.log("Connected to Database");
-
     assert.equal(err, null);
-    // var userFinder = db.collection('users').find({ "name" : name, "cookieDetails" : cookieDetails});
+    
+    // find the session ID string. if it exists, there should only be one result
     var userFinder = db.collection('users').find({ "cookieDetails" : cookieDetails});
     userFinder.nextObject(function(err, doc) 
       {
@@ -50,10 +51,8 @@ exports.newgame_post_handler = function(req, res)
           callback(result);
           }
         req.session.username = name;
-        console.log("1Inserted a new user into the users collection,", req.session.username);
-        // req.session.username = doc.name;
+        console.log("Inserted a new user into the users collection,", req.session.username);
         db.close();
-        // res.redirect('/game');
         } 
       else
         {
@@ -68,12 +67,11 @@ exports.newgame_post_handler = function(req, res)
           callback(result);
           }
         req.session.username = name;
-        console.log("2Inserted a new user into the users collection,", req.session.username);
-        // req.session.username = doc.name;
+        console.log("Inserted a new user into the users collection,", req.session.username);
         db.close();
-        // res.redirect('/game');
         }
       });
     });
+  // after user creation, re-use the load route to load the user into the game
   res.redirect('/load');
   }

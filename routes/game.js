@@ -1,11 +1,10 @@
+// GET handler for the game.
 exports.game = function(req, res)
 	{
-	// session: req.session;
-	res.render('game', { title: 'SC2 Manager' , session: req.session.username})
+	res.render('game', { title: 'Game' , username: req.session.username})
 	};
-
+// POST handler for the game. currently unused
 exports.game_post_handler = function(req, res)
 	{
-	// session: req.session;
-	res.render('game', { title: 'SC2 Manager' , session: req.session.username})
+	res.render('game', { title: 'Game' , username: req.session.username})
 	};
